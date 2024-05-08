@@ -69,12 +69,7 @@ output application/json
     </flow>
     <flow name="post:\stocks:application\json:cin7-exp-api-config">
         <logger level="INFO" doc:name="Log Start" doc:id="2c1f8c5d-11e1-4c2e-a762-9cab3c2afa17" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started Flow in cin7-exp-api",&#10;  correlationId: correlationId&#10;}]'/>
-		<ee:transform doc:name="Create Request">
-            <ee:message>
-				<ee:set-payload resource="dwls/msg-req-parameter-stock.dwl" />
-            </ee:message>
-        </ee:transform>
-		<flow-ref doc:name="cin7-exp-api-implementation" doc:id="eb402ddc-4b6f-4324-8f19-a930ba579c04" name="cin7-exp-api-implementation"/>
+		<flow-ref doc:name="cin7-exp-api-implementation" doc:id="eb402ddc-4b6f-4324-8f19-a930ba579c04" name="stocks-implementation-subflow"/>
 		<logger level="INFO" doc:name="Log Exit" doc:id="5526a6bd-ae8e-46b6-b7d3-a38735681c35" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended Flow in cin7-exp-api",&#10;  correlationId: correlationId&#10;}]'/>
     </flow>
 </mule>
