@@ -1,4 +1,0 @@
-%dw 2.0
-
-type auto_712dbeb4_ccb9_4ab4_b8f4_82563c04acad_Input_Payload = {|  |}
-

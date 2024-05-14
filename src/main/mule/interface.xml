@@ -11,7 +11,7 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <logger level="INFO" doc:name="Request Logger" doc:id="a97f9e65-6f2f-43ed-bc01-a50780458a5d" />
+        <logger level="INFO" doc:name="Request Logger" doc:id="a97f9e65-6f2f-43ed-bc01-a50780458a5d" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Request Logger",&#10;  MetaData: "Request received in cin7-exp-api",&#10;  correlationId: correlationId,&#10;  payload: payload&#10;}]'/>
 		<apikit:router config-ref="cin7-exp-api-config" />
 		<error-handler ref="global-error-handler" />
     </flow>
@@ -44,6 +44,7 @@ output application/json
 				<ee:set-payload resource="dwls/msg-req-parameter-customer.dwl" />
             </ee:message>
         </ee:transform>
+		<flow-ref doc:name="cin7-get-location-implementation-sub-flow" doc:id="d66e7deb-1aab-4f4f-a091-1ac086258eef" name="cin7-get-location-implementation-sub-flow" target="locationDetails"/>
 		<flow-ref doc:name="cin7-exp-api-implementation" doc:id="b75a0df7-7a8f-4460-82d6-714db3864a0b" name="cin7-exp-api-implementation"/>
 		<logger level="INFO" doc:name="Log Exit" doc:id="a3272914-bde9-4c76-8042-424160eff4dd" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended Flow in cin7-exp-api",&#10;  correlationId: correlationId&#10;}]'/>
     </flow>

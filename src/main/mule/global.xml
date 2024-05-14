@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<http:listener-config name="http_listener_config" doc:name="HTTP Listener config" doc:id="d17a67f6-67dd-4263-aff3-47bbb351f371" >
 		<http:listener-connection host="${https.host}" port="${https.port}" readTimeout="${https.readTimeout}"/>
 	</http:listener-config>
-	<http:request-config name="http_request_configuration" doc:name="HTTP Request configuration" doc:id="6d8c6d4d-dcaa-49dd-affb-b050e89fa213" responseTimeout="${pwCin7Proc.responseTimeout}" basePath="${pwCin7Proc.basePath}">
-		<http:request-connection protocol="${pwCin7Proc.protocol}" host="${pwCin7Proc.host}" port="${pwCin7Proc.port}" maxConnections="${pwCin7Proc.maxConnections}" connectionIdleTimeout="${pwCin7Proc.idleTimeout}">
-			<reconnection >
-				<reconnect frequency="${pwCin7Proc.reconnection.frequency}" count="${pwCin7Proc.reconnection.attempts}" />
-			</reconnection>
-		</http:request-connection>
-	</http:request-config>
 	<global-property doc:name="Global Property" doc:id="0fcd39c9-4216-4136-987a-b53e4db5e478" name="env" value="dev" />
 	<configuration-properties doc:name="Configuration properties" doc:id="1225999d-dd38-41ac-85c0-d3f9840fbcf9" file="properties/${env}.yaml" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="0cac2d52-8287-4bf6-b365-9bfb74a3d0aa" file="properties/${env}.yaml" key="${secure.key}">
@@ -28,4 +22,5 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 			<http:default-header key="x-correlation-id" value="#[correlationId]" />
 		</http:default-headers>
 	</http:request-config>
+	<api-gateway:autodiscovery apiId="${api.autodiscovery}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="4d1f08d3-964d-41b5-bcaf-1a5c8fcc4338" flowRef="cin7-exp-api-main" />
 </mule>
