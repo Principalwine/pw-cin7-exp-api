@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="stocks-implementation-subflow" doc:id="1d5ae47e-5cc9-465c-ba14-e54f3adbb02b" >
+		<ee:transform doc:name="Map stocks Payload" doc:id="0fc7fe59-e638-4f55-adfd-12cc60bbb951" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{"objectName": "Stock__c",
+"externalField": "Cin7ID__c",
+data: payload map ((item, index) ->
+{
+    Product_ID__c: item.ID,
+    Product_SKU__c: item.SKU,
+Product_Name__c: item.Name,
+Barcode__c: item.Barcode,
+Location__c: item.Location,
+Bin__c: item.Bin,
+Batch__c: item.Batch,
+Expiry_Date__c: item.ExpiryDate,
+On_Hand__c: item.OnHand,
+Allocated__c: item.Allocated,
+Available__c: item.Available,
+On_Order__c: item.OnOrder,
+Stock_On_Hand__c: item.StockOnHand,
+In_Transit__c: item.InTransit
+} )
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="a8b7f0fd-5573-41b8-bef1-488bb64a19cf" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="12d236cf-1367-4f8f-9d43-07af5271aa72" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}"/>
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="3c3661dc-dbd5-44ea-b2b3-6f3b7375e000" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+	</sub-flow>
+</mule>

@@ -1,0 +1,88 @@
+https:
+  host: "0.0.0.0"
+  port: "8081"
+  readTimeout: "30000"
+
+
+api:
+  autodiscovery: "19496659"
+  version: "v1"
+
+  
+#pwCin7Proc:
+#  host: "inventory.dearsystems.com"
+#  protocol: "HTTPS"
+#  port: "443"
+#  basePath: "/api"
+#  maxConnections: "100"
+#  idleTimeout: "30000"
+#  responseTimeout: "60000"
+#  reconnection:
+#    frequency: "3000"
+#    attempts: "3"
+
+endSystem:
+  PW-CIN7-PROC:
+    protocol: "https"
+    host: "pw-cin7-prc-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"  
+    client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
+    client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
+    response:
+      timeout: "50000"
+      
+  CIN7:
+    protocol: "https"
+    host: "inventory.dearsystems.com"  
+    response:
+      timeout: "50000"
+      
+  cin7-sys-api:
+    host: "pw-cin7-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
+    protocol: "https"
+    client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
+    client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
+ 
+          
+
+operation:
+  CUSTOMER:
+    path: "/api/customers"
+    method: 'POST'
+    
+  PRODUCT:
+    path: "/product"
+    method: 'POST'
+    
+  STOCK:
+    path: "/stock"
+    method: 'POST'
+    
+  SALES-ORDER:
+    path: "/salesOrder"
+    method: 'POST'
+    
+  GET-LOCATION:
+    path: "/api/locations"
+    
+#PW-CIN7-PROC-SECURE:
+#  client_id: "![1F+4hnZf0/c+cT73EgH5G1f2KAGGVv3tfnEgE9y6Oclfsmnse5rwdg==]"
+#  client_secret: "![ar4oGs1A/tSmjWqs4V7AXPailP7XiHLGmId/p+EfeurfXt0+DA98Yw==]"
+  
+sfdc:
+  basepath: "/api/v1"
+  host: "pw-sf-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
+  port: ""
+  client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
+  client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
+  upsert: "/upsert"
+  
+request:
+  response:
+    values: '0..599'
+  
+
+    
+    
+  
+    
+  
