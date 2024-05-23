@@ -46,3 +46,4 @@ target/
 .DS_Store
 velocity.log
 src/main/resources/foo.properties
+/bin/
