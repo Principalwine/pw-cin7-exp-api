@@ -38,6 +38,7 @@ endSystem:
       
   cin7-sys-api:
     host: "pw-cin7-sys-api-uat-1aarxz.5sc6y6-2.usa-e2.cloudhub.io"
+    port: ""
     protocol: "https"
     client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
     client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
@@ -63,7 +64,9 @@ operation:
     
   GET-LOCATION:
     path: "/api/locations"
+    method: "GET"
     
+
 #PW-CIN7-PROC-SECURE:
 #  client_id: "![1F+4hnZf0/c+cT73EgH5G1f2KAGGVv3tfnEgE9y6Oclfsmnse5rwdg==]"
 #  client_secret: "![ar4oGs1A/tSmjWqs4V7AXPailP7XiHLGmId/p+EfeurfXt0+DA98Yw==]"
