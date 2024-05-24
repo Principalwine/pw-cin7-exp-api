@@ -90,23 +90,16 @@ output application/json
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-//{
-//	"success": false,
-//	apiName: app.name,
-//	version: app.version,
-//	correlationId: correlationId,
-//	timestamp: now(),
-//	"errorDetails": [error.description]
-//}
 {
-	"success": false,
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
-	errorDescription: error.muleMessage.typedAttributes.reasonPhrase default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in cin7-exp-api"
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-exp-api"
 }]]></ee:set-payload>
 				</ee:message>
 				<ee:variables >
 					<ee:set-variable resource="dwls/var-set-error-code.dwl" variableName="httpStatus" />
+					<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync"]]></ee:set-variable>
+					<ee:set-variable variableName="entity" ><![CDATA["pw-cin7-exp-api"]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</on-error-propagate>

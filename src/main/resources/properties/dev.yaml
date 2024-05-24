@@ -83,9 +83,9 @@ request:
   response:
     values: '0..599'
   
-
-    
-    
-  
-    
-  
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  from: "james@principalwine.com.au"
+  recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
+  password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"

@@ -56,7 +56,7 @@ vars.requestPayload.httpRequest.queryParams]]]></http:query-params>
 		<logger level="INFO" doc:name="Log Exit" doc:id="4331df6d-cef0-4882-aedb-afb2c3a8598e" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended Flow in cin7-exp-api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]'/>
 	</sub-flow>
 	<sub-flow name="cin7-get-location-implementation-sub-flow" doc:id="07bf434c-a569-40bd-b1da-0164d5a46773" >
-		<http:request doc:name="Request to get Location details" doc:id="f9ecf9fa-701e-41ce-9813-176fd7dc200f" config-ref="HTTP_Request_configuration_cin7" path="${operation.GET-LOCATION.path}">
+		<http:request doc:name="Request to get Location details" doc:id="f9ecf9fa-701e-41ce-9813-176fd7dc200f" config-ref="HTTP_Request_configuration_cin7" path="${operation.GET-LOCATION.path}" method="GET">
 			<http:body ><![CDATA[#[null]]]></http:body>
 			<http:headers ><![CDATA[#[output application/java
 ---
@@ -67,7 +67,7 @@ vars.requestPayload.httpRequest.queryParams]]]></http:query-params>
 }]]]></http:headers>
 			<http:query-params ><![CDATA[#[output application/java
 ---
-payload.httpGetRequest.queryParams]]]></http:query-params>
+payload.httpGetRequest.queryParams default vars.locationName]]]></http:query-params>
 		</http:request>
 		<ee:transform doc:name="Location Response Transformation" doc:id="92bc19d3-feec-4226-a66a-f27cd5549251" >
 			<ee:message >
