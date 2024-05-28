@@ -65,7 +65,17 @@ output application/json
 				<ee:set-payload resource="dwls/msg-req-parameter-product.dwl" />
             </ee:message>
         </ee:transform>
-		<flow-ref doc:name="cin7-exp-api-implementation" doc:id="3bd4c6ac-9284-4f3b-8960-46c06348643d" name="cin7-exp-api-implementation"/>
+		<async doc:name="Async" doc:id="3449c74f-c5fe-4536-ae61-8bd0cd92e34d" >
+			<flow-ref doc:name="cin7-exp-api-implementation" doc:id="3bd4c6ac-9284-4f3b-8960-46c06348643d" name="cin7-exp-api-implementation" />
+		</async>
+		<ee:transform doc:name="Cin7 Response Transformation" doc:id="b4f9bb87-4f15-456a-b0ab-efb155f1151d">
+			<ee:message>
+				<ee:set-payload resource="dwls/msg-cin7-async-res.dwl" />
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<logger level="INFO" doc:name="Log Exit" doc:id="07f8bbb1-cbc2-4e35-9efd-42c0631e4e9a" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended Flow in cin7-exp-api",&#10;  correlationId: correlationId&#10;}]'/>
     </flow>
     <flow name="post:\salesOrders:application\json:cin7-exp-api-config">
