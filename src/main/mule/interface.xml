@@ -60,13 +60,16 @@ output application/json
     </flow>
     <flow name="post:\products:application\json:cin7-exp-api-config">
         <logger level="INFO" doc:name="Log Start" doc:id="44111f39-07d9-4767-82e5-5f7bd5dcd599" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started Flow in cin7-exp-api",&#10;  correlationId: correlationId&#10;}]'/>
-		<ee:transform doc:name="Create Request">
+		<async doc:name="Async" doc:id="3449c74f-c5fe-4536-ae61-8bd0cd92e34d" >
+			<foreach doc:name="For Each" doc:id="39e69d2f-ad17-4df5-8d7c-90b4cfeac123" collection="#[payload.ProductDetailsList]">
+				<ee:transform doc:name="Create Request">
             <ee:message>
 				<ee:set-payload resource="dwls/msg-req-parameter-product.dwl" />
             </ee:message>
         </ee:transform>
-		<async doc:name="Async" doc:id="3449c74f-c5fe-4536-ae61-8bd0cd92e34d" >
-			<flow-ref doc:name="cin7-exp-api-implementation" doc:id="3bd4c6ac-9284-4f3b-8960-46c06348643d" name="cin7-exp-api-implementation" />
+				<flow-ref doc:name="cin7-get-location-implementation-sub-flow" doc:id="ca32b327-6fd7-46b0-b994-47a5138238b2" name="cin7-get-location-implementation-sub-flow" target="locationDetails" />
+				<flow-ref doc:name="cin7-exp-api-implementation" doc:id="3bd4c6ac-9284-4f3b-8960-46c06348643d" name="cin7-exp-api-implementation" />
+			</foreach>
 		</async>
 		<ee:transform doc:name="Cin7 Response Transformation" doc:id="b4f9bb87-4f15-456a-b0ab-efb155f1151d">
 			<ee:message>

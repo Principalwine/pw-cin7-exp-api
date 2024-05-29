@@ -18,6 +18,24 @@ output application/json
   			"client_secret": Mule::p('secure::endSystem.PW-CIN7-PROC.client_secret')
 		},
 	},
+	"httpGetRequest": {
+		"protocol": Mule::p('endSystem.cin7-sys-api.protocol') as String,
+		"method": "GET",
+		"host": Mule::p('endSystem.cin7-sys-api.host') as String,
+		"url": Mule::p('operation.GET-LOCATION.path') as String,
+		"queryParams": {
+			"Name": payload.DefaultLocation
+		},
+		"uriParams": {
+		},
+		"headers": {
+			"Content-Type": "application/json",
+			"client_id": Mule::p('secure::endSystem.cin7-sys-api.client_id'),
+  			"client_secret": Mule::p('secure::endSystem.cin7-sys-api.client_secret')
+		},
+	},
 	"operation": "PRODUCT",
-	"requestBody": payload
+	"requestBody": {
+		ProductDetailsList: [payload]
+	}
 }
