@@ -74,5 +74,49 @@ output application/json
 				</error-handler>
 			</try>
 		</foreach>
+		<ee:transform doc:name="Query to Salesforce" doc:id="fbe8a46c-ba37-4fe9-9135-417f123f97e5" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"objectName": "Product2",
+	"fields" : "Id, Default_Location__r.name, Cin7_Id__c",
+	"where": {
+	"Cin7_Id__c" : payload.ID[0]
+}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request to Salesforce Query API" doc:id="b6054f16-5ede-46fa-b2e8-6f329995d55c" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.query}" outputMimeType="application/json" target="query">
+			<http:body ><![CDATA[#[vars.query]]]></http:body>
+		</http:request>
+		<ee:transform doc:name="Map Products Payload" doc:id="6b9a84b0-b497-4872-ad05-8e6de3bbbc06" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var loc = vars.query.Default_Location__r.Name[0]
+---
+{
+	"objectName": "Product2",
+"externalField": "Cin7_Id__c",
+data: [
+	{
+		Available__c: (payload filter($.Location == loc)).Available[0],
+        Available_On_Other_Location__c: (payload filter($.Location != loc)).Available[0] ,
+		  Total_Stock__c: payload reduce ($.Available + $$.Available) , 
+		  On_Order__c: (payload filter($.Location != loc)).OnOrder[0],
+          Cin7_Id__c: payload.ID[0]
+		 
+	}
+]
+	
+	
+	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="7efb00b4-14d0-4d9b-970a-d1ef9495a64f" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" outputMimeType="application/json" />
 	</sub-flow>
 </mule>

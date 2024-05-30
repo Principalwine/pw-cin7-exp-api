@@ -78,14 +78,19 @@ sfdc:
   client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
   client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
   upsert: "/upsert"
+  query: "/query"
   
 request:
   response:
     values: '0..599'
   
 
-    
-    
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  from: "james@principalwine.com.au"
+  recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
+  password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"
   
     
   

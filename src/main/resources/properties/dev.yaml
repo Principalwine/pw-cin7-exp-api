@@ -78,6 +78,7 @@ sfdc:
   client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
   client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
   upsert: "/upsert"
+  query: "/query"
   
 request:
   response:
