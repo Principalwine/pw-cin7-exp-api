@@ -63,8 +63,8 @@ var loc = vars.query.Default_Location__r.Name[0]
 data: [
 	{
 		Available__c: (payload filter($.Location == loc)).Available[0],
-        Available_On_Other_Location__c: (payload filter($.Location != loc)).Available[0] ,
-		  Total_Stock__c: payload reduce ($.Available + $$.Available) , 
+        Available_On_Other_Location__c: (payload filter($.Location != loc)).Available reduce ($+$$),
+		  Total_Stock__c: payload.Available reduce ($+$$), 
 		  On_Order__c: (payload filter($.Location != loc)).OnOrder[0],
           Cin7_Id__c: payload.ID[0]
 		 
