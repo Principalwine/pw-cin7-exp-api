@@ -5,6 +5,17 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="stock-implementation-for-each-product" doc:id="2dd857f7-ac23-4450-8edd-a30a50de0e55" >
+		<foreach doc:name="For Each" doc:id="39e69d2f-ad17-4df5-8d7c-90b4cfeac123" collection="#[payload.ProductDetailsList]">
+                <ee:transform doc:name="Create Request">
+                    <ee:message>
+                        <ee:set-payload resource="dwls/msg-req-parameter-product.dwl" />
+                    </ee:message>
+                </ee:transform>
+                <flow-ref doc:name="cin7-get-location-implementation-sub-flow" doc:id="ca32b327-6fd7-46b0-b994-47a5138238b2" name="cin7-get-location-implementation-sub-flow" target="locationDetails" />
+                <flow-ref doc:name="cin7-exp-api-implementation" doc:id="3bd4c6ac-9284-4f3b-8960-46c06348643d" name="cin7-exp-api-implementation" />
+            </foreach>
+	</sub-flow>
 	<sub-flow name="cin7-exp-api-implementation" doc:id="712dbeb4-ccb9-4ab4-b8f4-82563c04acad" >
 		<set-variable value="#[payload]" doc:name="Set Request Payload" doc:id="9a8908c5-5bdf-496d-af2c-ea5d578dc165" variableName="requestPayload"/>
 		<ee:transform doc:name="Payload" doc:id="50a4c6c9-3ebc-4367-bcb6-63249f8acc8a">
