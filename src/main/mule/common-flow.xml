@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<sub-flow name="send-email-subflow" doc:id="3df1bbee-9f34-48dd-8cca-0c6a27241d1e" >
+		<logger level="INFO" doc:name="Logger" doc:id="af77cd90-8189-454e-a8d5-d7832512f33a" message='#["Sending Email"]' />
+		<parse-template doc:name="Parse Template" doc:id="02e353fa-c9dc-45dc-aadc-53df39dbafd2" location="error-response.html" target="emailContent" />
+		<try doc:name="Try" doc:id="bc0633b8-b1e6-47a3-9d43-aa04b7913ff5" >
+			<email:send doc:name="Send Email" doc:id="8901fc49-b31e-4fb5-8f24-b0f2fbb0644d" config-ref="Email_SMTP" fromAddress='#[Mule::p("email.from")]' subject="#[&quot;CRITICAL: &quot; ++ vars.entity ++ &quot;: Integration Failure : &quot; ++ upper(p('mule.env')) ++ &quot; Environment&quot;]" toAddresses='#[Mule::p("email.recipients") splitBy ","]' >
+				<email:body contentType="text/html" >
+					<email:content ><![CDATA[#[vars.emailContent]]]></email:content>
+				</email:body>
+			</email:send>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1dfed614-7a8c-4da5-90ce-4a4f3db237da" >
+					<logger level="INFO" doc:name="Log SMTP Error" doc:id="36b9a7a7-4842-4323-9439-d7beece2bdd2" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"timeStamp": now(),&#10;"correlationId": correlationId,&#10;"appName": app.name,&#10;"logPoint": "Error Sending Notification"&#10;}]' />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

@@ -5,36 +5,174 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<sub-flow name="stocks-implementation-subflow" doc:id="1d5ae47e-5cc9-465c-ba14-e54f3adbb02b" >
-		<ee:transform doc:name="Map stocks Payload" doc:id="0fc7fe59-e638-4f55-adfd-12cc60bbb951" >
+	<sub-flow name="upsert-stock-details-in-product" doc:id="316c3d21-746f-4286-87f3-719c8e09219e" >
+		<ee:transform doc:name="Query to Salesforce" doc:id="bc9263bf-2b8a-433c-81b5-14b456c4ac1a">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="query"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"objectName": "Product2",
+	"fields" : "Id, Default_Location__r.name, Cin7_Id__c",
+	"where": {
+	"Cin7_Id__c" : payload.ID[0]
+}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="c3504722-1807-45fe-b03c-9c6b0b918d08" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api for product query",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<try doc:name="Try" doc:id="be712f20-fc54-4609-b4c2-ec238572ac20" >
+			<http:request method="POST" doc:name="Request to Salesforce Query API" doc:id="b6054f16-5ede-46fa-b2e8-6f329995d55c" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.query}" outputMimeType="application/json" target="query">
+			<http:body><![CDATA[#[vars.query]]]></http:body>
+		</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="47948b7e-584d-4690-a595-7af94531f337" type="ANY">
+					<logger level="ERROR" doc:name="Log Error" doc:id="7a691362-732b-45e0-b503-206a9afdb64c" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ERROR",&#10;  MetaData: "Error Occurred",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+					<ee:transform doc:name="Transform Message" doc:id="f7a4195e-cf99-4573-97c2-b285cda6f9fd" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-exp-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable resource="dwls/var-set-error-code.dwl" variableName="httpStatus" />
+							<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync"]]></ee:set-variable>
+							<ee:set-variable variableName="entity" ><![CDATA["pw-cin7-exp-api"]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="send-email-subflow" doc:id="48258513-b643-4453-93ae-5daeb09ffe26" name="send-email-subflow" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="27d23196-cd79-4f1f-aa69-133ac3752be5" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<ee:transform doc:name="Map Products Payload" doc:id="0bf3ec0c-11ee-4365-835c-2948e26aebdb" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+var loc = vars.query.Default_Location__r.Name[0]
+---
+{
+	"objectName": "Product2",
+"externalField": "Cin7_Id__c",
+data: [
+	{
+		Available__c: (payload filter($.Location == loc)).Available[0],
+        Available_On_Other_Location__c: (payload filter($.Location != loc)).Available reduce ($+$$),
+		  Total_Stock__c: payload.Available reduce ($+$$), 
+		  On_Order__c: (payload filter($.Location != loc)).OnOrder[0],
+          Cin7_Id__c: payload.ID[0]
+		 
+	}
+]
+	
+	
+	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="130cf6c0-b270-483f-82af-f02ed648b608" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system for product upsert api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<try doc:name="Try" doc:id="2152d0d6-5b6e-4ecd-8ffe-e392a83a4b4f" >
+			<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="af596a9b-17f5-409b-b142-461e12271c5f" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" outputMimeType="application/json" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="122ea144-7ea9-465c-a535-0755cf0a8214" type="ANY" >
+					<logger level="ERROR" doc:name="Log Error" doc:id="2dfdf5eb-fabe-4d14-986e-cc9bad8fdcc9" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ERROR",&#10;  MetaData: "Error Occurred",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+					<ee:transform doc:name="Transform Message" doc:id="542abb9e-e157-462e-9c1d-7b5f2efc204c" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-exp-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable resource="dwls/var-set-error-code.dwl" variableName="httpStatus" />
+							<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync"]]></ee:set-variable>
+							<ee:set-variable variableName="entity" ><![CDATA["pw-cin7-exp-api"]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="send-email-subflow" doc:id="a8011e4e-7e36-4c6c-9654-1285c6009349" name="send-email-subflow" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="a9c6fd88-e1cd-4dbd-8c93-65b7b23f13a9" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api for product upsert completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+	</sub-flow>
+	<sub-flow name="stocks-implementation-subflow" doc:id="1d5ae47e-5cc9-465c-ba14-e54f3adbb02b" >
+		<foreach doc:name="For Each" doc:id="c5ef92b6-ad4a-4e73-b5fa-6f4f62e2ba26" >
+			<try doc:name="Try" doc:id="a0f395bb-8fa3-4e0d-b830-dffe6232252c" >
+				<set-variable value='#[{&#10;			"Name": payload.Location&#10;		}]' doc:name="Set Variable" doc:id="3866f858-98a7-41ba-b07e-8f9f29909818" variableName="locationName" />
+				<flow-ref doc:name="cin7-get-location-implementation-sub-flow" doc:id="88314b61-9dc8-48e4-8700-15d0452d065d" name="cin7-get-location-implementation-sub-flow" target="location" />
+				<ee:transform doc:name="Map stocks Payload" doc:id="0fc7fe59-e638-4f55-adfd-12cc60bbb951">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
 {"objectName": "Stock__c",
-"externalField": "Cin7ID__c",
-data: payload map ((item, index) ->
+"externalField": "Cin7_StockID__c",
+data: [
 {
-    Product_ID__c: item.ID,
-    Product_SKU__c: item.SKU,
-Product_Name__c: item.Name,
-Barcode__c: item.Barcode,
-Location__c: item.Location,
-Bin__c: item.Bin,
-Batch__c: item.Batch,
-Expiry_Date__c: item.ExpiryDate,
-On_Hand__c: item.OnHand,
-Allocated__c: item.Allocated,
-Available__c: item.Available,
-On_Order__c: item.OnOrder,
-Stock_On_Hand__c: item.StockOnHand,
-In_Transit__c: item.InTransit
-} )
+	Product_ID__r:
+	{
+		Cin7_Id__c: payload.ID
+	},
+    Product_SKU__c: payload.SKU,
+Product_Name__c: payload.Name,
+Barcode__c: payload.Barcode,
+Location__r:
+	{
+		Cin7ID__c: vars.location.data.LocationList[0].ID
+	},
+Bin__c: payload.Bin,
+Batch__c: payload.Batch,
+Expiry_Date__c: payload.ExpiryDate,
+On_Hand__c: payload.OnHand,
+Allocated__c: payload.Allocated,
+Available__c: payload.Available,
+On_Order__c: payload.OnOrder,
+Stock_On_Hand__c: payload.StockOnHand,
+In_Transit__c: payload.InTransit,
+//LastModifiedOn__c: payload.LastModifiedOn,
+Category__c: payload.Category,
+Cin7_StockID__c: payload.ID ++ "-" ++ vars.location.data.LocationList[0].ID
+} ]
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="DEBUG" doc:name="Log Outbound" doc:id="a8b7f0fd-5573-41b8-bef1-488bb64a19cf" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
-		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="12d236cf-1367-4f8f-9d43-07af5271aa72" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}"/>
-		<logger level="DEBUG" doc:name="Log Inbound" doc:id="3c3661dc-dbd5-44ea-b2b3-6f3b7375e000" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+				<logger level="DEBUG" doc:name="Log Outbound" doc:id="a8b7f0fd-5573-41b8-bef1-488bb64a19cf" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+				<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="12d236cf-1367-4f8f-9d43-07af5271aa72" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" outputMimeType="application/json"/>
+				<logger level="DEBUG" doc:name="Log Inbound" doc:id="3c3661dc-dbd5-44ea-b2b3-6f3b7375e000" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="df854776-76e8-469f-9600-1ed65ace7fc1" type="ANY">
+						<logger level="ERROR" doc:name="Log Error" doc:id="cbdc8201-5ff5-4d1f-a71e-9ef83c1178ab" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ERROR",&#10;  MetaData: "Error Occurred",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+						<ee:transform doc:name="Transform Message" doc:id="1e1537b7-b67f-41ef-8b2f-47c10e746d67">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-exp-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable resource="dwls/var-set-error-code.dwl" variableName="httpStatus" />
+								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync"]]></ee:set-variable>
+								<ee:set-variable variableName="entity"><![CDATA["pw-cin7-exp-api"]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="send-email-subflow" doc:id="5f026e8c-cc66-40eb-95e0-707936293ad5" name="send-email-subflow" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</foreach>
+		<flow-ref doc:name="upsert-stock-details-in-product" doc:id="1dad59ab-c3df-4738-8464-6143ed29b151" name="upsert-stock-details-in-product" />
 	</sub-flow>
 </mule>

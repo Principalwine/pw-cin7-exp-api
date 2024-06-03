@@ -38,7 +38,8 @@ endSystem:
       
   cin7-sys-api:
     host: "pw-cin7-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
-    protocol: "https"
+    port: ""
+    protocol: "HTTPS"
     client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
     client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
  
@@ -50,7 +51,7 @@ operation:
     method: 'POST'
     
   PRODUCT:
-    path: "/product"
+    path: "/api/products"
     method: 'POST'
     
   STOCK:
@@ -63,6 +64,8 @@ operation:
     
   GET-LOCATION:
     path: "/api/locations"
+    method: "GET"
+    
     
 #PW-CIN7-PROC-SECURE:
 #  client_id: "![1F+4hnZf0/c+cT73EgH5G1f2KAGGVv3tfnEgE9y6Oclfsmnse5rwdg==]"
@@ -75,14 +78,15 @@ sfdc:
   client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
   client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
   upsert: "/upsert"
+  query: "/query"
   
 request:
   response:
     values: '0..599'
   
-
-    
-    
-  
-    
-  
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  from: "james@principalwine.com.au"
+  recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
+  password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"
