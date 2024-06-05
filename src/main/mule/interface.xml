@@ -80,7 +80,7 @@ output application/json
                 <ee:set-payload resource="dwls/msg-req-parameter-salesOrder.dwl" />
             </ee:message>
         </ee:transform>
-        <!-- [STUDIO:"cin7-exp-api-implementation"]<flow-ref doc:name="cin7-exp-api-implementation" doc:id="c426dc55-d8b3-419b-9be1-bc967d6b0c57" name="cin7-exp-api-implementation" /> [STUDIO] -->
+        <flow-ref doc:name="cin7-exp-api-implementation" doc:id="c426dc55-d8b3-419b-9be1-bc967d6b0c57" name="cin7-exp-api-implementation" />
         <logger level="INFO" doc:name="Log Exit" doc:id="0dc2ae65-32d2-4bb4-98c0-59486c027a01" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
     <flow name="post:\stocks:application\json:cin7-exp-api-config">

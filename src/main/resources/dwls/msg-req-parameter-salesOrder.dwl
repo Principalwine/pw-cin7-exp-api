@@ -14,8 +14,8 @@ output application/json
 		},
 		"headers": {
 			"Content-Type": "application/json",
-			"client_id": Mule::p('secure::PW-CIN7-PROC-SECURE.client_id'),
-  			"client_secret": Mule::p('secure::PW-CIN7-PROC-SECURE.client_secret')
+			"client_id": Mule::p('secure::endSystem.PW-CIN7-PROC.client_id'),
+  			"client_secret": Mule::p('secure::endSystem.PW-CIN7-PROC.client_secret')
 		},
 	},
 	"operation": "SALES-ORDER",
