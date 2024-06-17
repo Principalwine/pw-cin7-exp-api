@@ -59,7 +59,7 @@ operation:
     method: 'POST'
     
   SALES-ORDER:
-    path: "/salesOrder"
+    path: "/api/salesOrders"
     method: 'POST'
     
   GET-LOCATION:
