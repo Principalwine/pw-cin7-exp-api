@@ -8,18 +8,6 @@ api:
   autodiscovery: "19513877"
   version: "v1"
 
-  
-#pwCin7Proc:
-#  host: "inventory.dearsystems.com"
-#  protocol: "HTTPS"
-#  port: "443"
-#  basePath: "/api"
-#  maxConnections: "100"
-#  idleTimeout: "30000"
-#  responseTimeout: "60000"
-#  reconnection:
-#    frequency: "3000"
-#    attempts: "3"
 
 endSystem:
   PW-CIN7-PROC:
@@ -51,7 +39,7 @@ operation:
     method: 'POST'
     
   PRODUCT:
-    path: "/product"
+    path: "/api/products"
     method: 'POST'
     
   STOCK:
@@ -59,17 +47,13 @@ operation:
     method: 'POST'
     
   SALES-ORDER:
-    path: "/salesOrder"
+    path: "/api/salesOrders"
     method: 'POST'
     
   GET-LOCATION:
     path: "/api/locations"
     method: "GET"
     
-
-#PW-CIN7-PROC-SECURE:
-#  client_id: "![1F+4hnZf0/c+cT73EgH5G1f2KAGGVv3tfnEgE9y6Oclfsmnse5rwdg==]"
-#  client_secret: "![ar4oGs1A/tSmjWqs4V7AXPailP7XiHLGmId/p+EfeurfXt0+DA98Yw==]"
   
 sfdc:
   basepath: "/api/v1"
@@ -82,8 +66,7 @@ sfdc:
   
 request:
   response:
-    values: '0..599'
-  
+    values: '0..599'  
 
 email:
   host: "smtp.gmail.com"
@@ -91,6 +74,3 @@ email:
   from: "james@principalwine.com.au"
   recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
   password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"
-  
-    
-  
