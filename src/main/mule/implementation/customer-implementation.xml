@@ -5,6 +5,12 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="location-customer-implemetation-subflow" doc:id="bc941c74-8e02-47fd-b341-f74e1f1873a2" >
+		<async doc:name="Async" doc:id="5cc15572-d0c2-4235-95c6-c1e30b62ea35">
+            <flow-ref doc:name="cin7-get-location-implementation-sub-flow" doc:id="d66e7deb-1aab-4f4f-a091-1ac086258eef" name="cin7-get-location-implementation-sub-flow" target="locationDetails" />
+            <flow-ref doc:name="cin7-exp-api-implementation" doc:id="b75a0df7-7a8f-4460-82d6-714db3864a0b" name="cin7-exp-api-implementation" />
+        </async>
+	</sub-flow>
 	<sub-flow name="stock-implementation-for-each-product" doc:id="2dd857f7-ac23-4450-8edd-a30a50de0e55" >
 		<foreach doc:name="For Each" doc:id="39e69d2f-ad17-4df5-8d7c-90b4cfeac123" collection="#[payload.ProductDetailsList]">
                 <ee:transform doc:name="Create Request">
@@ -32,11 +38,6 @@ else if(payload.operation == "PRODUCT")
 else payload.requestBody]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<!-- [STUDIO:"Choice"]<choice doc:name="Choice" doc:id="617078df-98f8-4a26-a05c-598783377b0b" >
-			<otherwise >
-				<set-payload value="#[payload.requestBody&#93;" doc:name="Set Payload" doc:id="21b8e0d4-90bc-4c3a-94ec-cb14c527551d" />
-			</otherwise>
-		</choice> [STUDIO] -->
 		<logger level="DEBUG" doc:name="Log Outbound" doc:id="d4219f03-aaec-4c26-b306-bae44ba86cb2" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to process api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]'/>
 		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="1724e834-f2d4-4980-a97e-a91a072469cf" >
 			<http:request method="#[vars.requestPayload.httpRequest.method]" doc:name="Proc Request" doc:id="bd37c869-63d5-4015-8fa9-437a566b563b" url='#[vars.requestPayload.httpRequest.protocol ++ "://" ++ vars.requestPayload.httpRequest.host ++ vars.requestPayload.httpRequest.url]'>
@@ -93,44 +94,5 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
-	<!-- [STUDIO:"sales-order"]<flow name="sales-order" doc:id="fafb168b-1ba3-43e4-9733-a679063b934d" >
-		<http:listener doc:name="Listener" doc:id="feb3e209-5bdb-44dc-a07d-7e71090590ad" config-ref="http_listener_config" path="/customer" allowedMethods="POST"/>
-		<logger level="INFO" doc:name="Request Logger" doc:id="498249be-d59e-4d12-bbed-25068a575f9b" message="#[payload&#93;"/>
-		<ee:transform doc:name="Transform Message" doc:id="9ed8e90c-24c4-495e-bf98-cea19c7a81e3">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
-&#45;&#45;-
-{
-}&#93;&#93;></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="0519d87d-bad5-41c0-bda8-b69fb7e5d5c4" name="cin7-exp-api-implementation" />
-	
-</flow> [STUDIO] -->
-	<!-- [STUDIO:"product"]<flow name="product" doc:id="93f29d12-f2a3-4570-b3c5-148fd9347d2a" >
-		<http:listener doc:name="Listener" doc:id="5f013376-9264-48ac-b19b-2d2ed21a82be" config-ref="http_listener_config" path="/customer" allowedMethods="POST"/>
-		<logger level="INFO" doc:name="Request Logger" doc:id="5a7d5195-efb5-44d3-8169-a078b4b0ad66" message="#[payload&#93;"/>
-		<ee:transform doc:name="Create Request" doc:id="71b81a24-75b4-4d5a-a4d1-53284d50ad85">
-			<ee:message>
-				<ee:set-payload resource="dwls/msg-req-parameter-product.dwl" />
-			</ee:message>
-		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="023924ef-cb17-40bd-83ac-c1efcc202c34" name="cin7-exp-api-implementation" />
-		<logger level="INFO" doc:name="Log Exit" doc:id="be2de2ba-a75f-4390-8b02-d170a06f17dc" message="#[payload&#93;"/>
-		<error-handler ref="global-error-handler" />
-	
-</flow> [STUDIO] -->
-	<!-- [STUDIO:"salesOrder"]<flow name="salesOrder" doc:id="091a6746-adb9-4f0c-943b-4ef183b6f3ae" >
-		<http:listener doc:name="Listener" doc:id="1dbec607-8580-4ea3-8f77-c7ca7a9ec33a" config-ref="http_listener_config" path="/salesOrder"/>
-		<logger level="INFO" doc:name="Request Logger" doc:id="b8c39135-3f87-4aa6-bbd2-b0c8400f04bc" message="#[payload&#93;"/>
-		<ee:transform doc:name="Create Request" doc:id="c1dd06e1-8a03-45e3-b788-196ae9490431" >
-			<ee:message >
-				<ee:set-payload resource="dwls/msg-req-parameter-salesOrder.dwl" />
-			</ee:message>
-		</ee:transform>
-		<flow-ref doc:name="cin7-exp-api-implementation" doc:id="05af252f-bf06-4ec5-9e38-3e1d345df56e" name="cin7-exp-api-implementation"/>
-		<logger level="INFO" doc:name="Log Exit" doc:id="7ea21bdc-46bc-47a1-bbce-d92eff637af3" message="#[payload&#93;"/>
-	</flow> [STUDIO] -->
 	
 </mule>
