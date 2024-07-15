@@ -1,0 +1,76 @@
+https:
+  host: "0.0.0.0"
+  port: "8081"
+  readTimeout: "30000"
+
+
+api:
+  autodiscovery: "19717207"
+  version: "v1"
+
+
+endSystem:
+  PW-CIN7-PROC:
+    protocol: "https"
+    host: ""
+    client_id: "![wRQmNUdJj9i99n6IYbnEFtzzI2wyy2/+Ro3PHgCnpNwUlLoD6rGtEA==]"
+    client_secret: "![yaB+BcliYlm59FOFljAZd6VQX6fMiLMOnF/p56u0KWplLcp2dmXqTA==]"
+    response:
+      timeout: "50000"
+      
+  CIN7:
+    protocol: "https"
+    host: "inventory.dearsystems.com"  
+    response:
+      timeout: "50000"
+      
+  cin7-sys-api:
+    host: ""
+    port: ""
+    protocol: "HTTPS"
+    client_id: "![+F2xBhH79zuZOkyra7BLkBc8yUNZH4sNugW+7g7kFkWY3xXEkG7H1g==]"
+    client_secret: "![LUP9HE402sgaC3p1rlYzGxxcoHTDuQqj5K2wZtLTqmARL2Mu3Wjmvw==]"
+ 
+          
+
+operation:
+  CUSTOMER:
+    path: "/api/customers"
+    method: 'POST'
+    
+  PRODUCT:
+    path: "/api/products"
+    method: 'POST'
+    
+  STOCK:
+    path: "/stock"
+    method: 'POST'
+    
+  SALES-ORDER:
+    path: "/api/salesOrders"
+    method: 'POST'
+    
+  GET-LOCATION:
+    path: "/api/locations"
+    method: "GET"
+    
+  
+sfdc:
+  basepath: "/api/v1"
+  host: ""
+  port: ""
+  client-id: "![PD1d21lmbHZOJ2kmRqGS5Fh7k6qpUJjRpC6tTUYKrd0RQGEgdnbx7g==]"
+  client-secret: "![JyVZ+THxynW57cI1yQdFXqZb0mm9b6Tdb5ipCQwl96WMvBeE3+7FMw==]"
+  upsert: "/upsert"
+  query: "/query"
+  
+request:
+  response:
+    values: '0..599'  
+
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  from: "james@principalwine.com.au"
+  recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
+  password: "![]"
