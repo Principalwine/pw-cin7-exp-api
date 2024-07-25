@@ -78,8 +78,8 @@ vars.requestPayload.httpRequest.queryParams]]]></http:query-params>
 ---
 {
 	"Content-Type": "application/json",
-	"client_id": Mule::p('secure::endSystem.PW-CIN7-PROC.client_id'),
-	"client_secret": Mule::p('secure::endSystem.PW-CIN7-PROC.client_secret') 
+	"client_id": Mule::p('secure::endSystem.cin7-sys-api.client_id'),
+	"client_secret": Mule::p('secure::endSystem.cin7-sys-api.client_secret') 
 }]]]></http:headers>
 			<http:query-params ><![CDATA[#[output application/java
 ---
