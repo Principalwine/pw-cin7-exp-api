@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <apikit:config name="cin7-exp-api-config" api="resource::5171e7e0-1d56-46fe-8c83-c71abc945e2a:cin7-exp-api:1.0.2:raml:zip:cin7-exp-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="cin7-exp-api-config" api="resource::5171e7e0-1d56-46fe-8c83-c71abc945e2a:cin7-exp-api:1.0.3:raml:zip:cin7-exp-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="cin7-exp-api-main">
         <http:listener config-ref="http_listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -45,7 +45,7 @@ output application/json
             </ee:message>
         </ee:transform>
         <flow-ref doc:name="customer-implementation-subflow" doc:id="4a30c836-34f2-4ff0-916e-719be80b4064" name="location-customer-implemetation-subflow" />
-		<ee:transform doc:name="Cin7 Response Transformation" doc:id="8729229f-8eda-4536-a349-4ae9b0850d3d">
+        <ee:transform doc:name="Cin7 Response Transformation" doc:id="8729229f-8eda-4536-a349-4ae9b0850d3d">
             <ee:message>
                 <ee:set-payload resource="dwls/msg-cin7-async-res.dwl" />
             </ee:message>
@@ -77,18 +77,25 @@ output application/json
                 <ee:set-payload resource="dwls/msg-req-parameter-salesOrder.dwl" />
             </ee:message>
         </ee:transform>
-		<async doc:name="Async" doc:id="6d1761cd-2df8-4050-88b3-fdeb860df09a" >
-			<flow-ref doc:name="cin7-exp-api-implementation" doc:id="c426dc55-d8b3-419b-9be1-bc967d6b0c57" name="cin7-exp-api-implementation" />
-		</async>
+        <async doc:name="Async" doc:id="6d1761cd-2df8-4050-88b3-fdeb860df09a">
+            <choice doc:name="Choice" doc:id="e092d65a-7fb1-4eb6-b383-a2d94fb08f1d">
+                <when expression="#[payload.requestBody.EventType == &quot;Sale/PickAuthorised&quot;]">
+                    <logger level="INFO" doc:name="Log Other" doc:id="1f9d4f1e-837c-49f1-bd62-67f5e04ec751" message="Ignoring Event for Sale/PickAuthorised" />
+                </when>
+                <otherwise>
+                    <flow-ref doc:name="cin7-exp-api-implementation" doc:id="c426dc55-d8b3-419b-9be1-bc967d6b0c57" name="cin7-exp-api-implementation" />
+                </otherwise>
+            </choice>
+        </async>
         <ee:transform doc:name="Cin7 Response Transformation" doc:id="59726b1a-c5af-4141-9047-614d37bf9c4b">
-			<ee:message>
-				<ee:set-payload resource="dwls/msg-cin7-async-res.dwl" />
-			</ee:message>
-			<ee:variables>
-				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<logger level="INFO" doc:name="Log Exit" doc:id="0dc2ae65-32d2-4bb4-98c0-59486c027a01" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+            <ee:message>
+                <ee:set-payload resource="dwls/msg-cin7-async-res.dwl" />
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" doc:name="Log Exit" doc:id="0dc2ae65-32d2-4bb4-98c0-59486c027a01" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
     <flow name="post:\stocks:application\json:cin7-exp-api-config">
         <logger level="INFO" doc:name="Log Start" doc:id="2c1f8c5d-11e1-4c2e-a762-9cab3c2afa17" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Started Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
@@ -105,4 +112,23 @@ output application/json
         </ee:transform>
         <logger level="INFO" doc:name="Log Exit" doc:id="5526a6bd-ae8e-46b6-b7d3-a38735681c35" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
+    <!-- [STUDIO:"put:\salesOrders:application\json:cin7-exp-api-config"]<flow name="put:\salesOrders:application\json:cin7-exp-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  success: true,
+  apiName: "pw-cin7-exp-api",
+  version: "v1.0.0",
+  correlationId: "05c09130-75a2-11eb-9dcf-aed564bf8171",
+  timestamp: "1970-01-01T00:00:01.001-06:00",
+  data: {
+    message: "Resource created"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> [STUDIO] -->
 </mule>
