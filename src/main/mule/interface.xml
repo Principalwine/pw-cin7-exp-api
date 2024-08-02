@@ -79,7 +79,7 @@ output application/json
         </ee:transform>
         <async doc:name="Async" doc:id="6d1761cd-2df8-4050-88b3-fdeb860df09a">
             <choice doc:name="Choice" doc:id="e092d65a-7fb1-4eb6-b383-a2d94fb08f1d">
-                <when expression="#[payload.requestBody.EventType == &quot;Sale/PickAuthorised&quot;]">
+                <when expression='#[payload.requestBody.EventType == "Sale/PickAuthorised" or payload.requestBody.EventType == "Sale/OrderAuthorised"]'>
                     <logger level="INFO" doc:name="Log Other" doc:id="1f9d4f1e-837c-49f1-bd62-67f5e04ec751" message="Ignoring Event for Sale/PickAuthorised" />
                 </when>
                 <otherwise>
