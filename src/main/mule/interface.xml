@@ -39,13 +39,15 @@ output application/json
     </flow> [STUDIO] -->
     <flow name="post:\customers:application\json:cin7-exp-api-config">
         <logger level="INFO" doc:name="Log Start" doc:id="afdb8d59-e8cf-493f-bead-48ebfc344f21" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Started Flow in cin7-exp-api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
-        <ee:transform doc:name="Create Request">
+        <!-- [STUDIO:"Create Request"]<ee:transform doc:name="Create Request">
             <ee:message>
                 <ee:set-payload resource="dwls/msg-req-parameter-customer.dwl" />
             </ee:message>
-        </ee:transform>
-        <flow-ref doc:name="customer-implementation-subflow" doc:id="4a30c836-34f2-4ff0-916e-719be80b4064" name="location-customer-implemetation-subflow" />
-        <ee:transform doc:name="Cin7 Response Transformation" doc:id="8729229f-8eda-4536-a349-4ae9b0850d3d">
+        </ee:transform> [STUDIO] -->
+		<async doc:name="Async" doc:id="afa88d32-73b6-40f8-a8f3-7d611244d9dd" >
+			<flow-ref doc:name="customer-implementation-subflow" doc:id="4a30c836-34f2-4ff0-916e-719be80b4064" name="location-customer-implemetation-subflow" />
+		</async>
+		<ee:transform doc:name="Cin7 Response Transformation" doc:id="8729229f-8eda-4536-a349-4ae9b0850d3d">
             <ee:message>
                 <ee:set-payload resource="dwls/msg-cin7-async-res.dwl" />
             </ee:message>
