@@ -84,7 +84,20 @@ output application/json
                 <when expression='#[payload.requestBody.EventType == "Sale/PickAuthorised" or payload.requestBody.EventType == "Sale/OrderAuthorised"]'>
                     <logger level="INFO" doc:name="Log Other" doc:id="1f9d4f1e-837c-49f1-bd62-67f5e04ec751" message="Ignoring Event for Sale/PickAuthorised" />
                 </when>
-                <otherwise>
+                <when expression='#[payload.requestBody.EventType == "Sale/PackAuthorised" or payload.requestBody.EventType == "Sale/ShipmentAuthorised"]'>
+					<ee:transform doc:name="Wait" doc:id="98f219e8-ab3d-4bef-a721-074e41f5f86d" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+payload
+wait 5000]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<flow-ref doc:name="cin7-exp-api-implementation" doc:id="56121ee1-1433-40df-accf-db26cf146958" name="cin7-exp-api-implementation" />
+				</when>
+				<otherwise>
                     <flow-ref doc:name="cin7-exp-api-implementation" doc:id="c426dc55-d8b3-419b-9be1-bc967d6b0c57" name="cin7-exp-api-implementation" />
                 </otherwise>
             </choice>
